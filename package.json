@@ -1,0 +1,8 @@
+{
+  "name": "nfl-defining-moments",
+  "version": "1.0.0",
+  "description": "RotoWire NFL Franchise-Defining Moments Voting — Built by RotoWire Media Team",
+  "dependencies": {
+    "@upstash/redis": "^1.34.0"
+  }
+}
