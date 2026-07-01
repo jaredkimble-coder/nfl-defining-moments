@@ -1,0 +1,395 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>NFL Franchise-Defining Moments — RotoWire</title>
+<meta property="og:title" content="NFL Franchise-Defining Moments — RotoWire">
+<meta property="og:description" content="Vote for the most franchise-defining moment of the last 10 years for all 32 NFL teams.">
+<style>
+  :root{
+    --bg:#0D1B2E;--navy-mid:#122338;--panel:#152844;--panel-2:#1A3054;
+    --line:#1E3A5F;--red:#F0314A;--red-dim:#B52438;
+    --text:#FFFFFF;--text-dim:#8AA4BF;--text-muted:#4D7090;
+  }
+  *{box-sizing:border-box;margin:0;padding:0;}
+  html,body{background:var(--bg);color:var(--text);font-family:-apple-system,'Helvetica Neue',Arial,sans-serif;}
+
+  header.top{background:var(--bg);border-bottom:3px solid var(--red);text-align:center;}
+  .header-inner{max-width:960px;margin:0 auto;padding:16px 24px;text-align:center;}
+  .lightning-logo{height:52px;display:inline-block;}
+
+  .hero{
+    background:linear-gradient(160deg,#122338 0%,#0D1B2E 65%);
+    border-bottom:1px solid var(--line);text-align:center;padding:44px 24px 40px;
+    position:relative;overflow:hidden;
+  }
+  .hero::before{content:'';position:absolute;inset:0;background:radial-gradient(ellipse 700px 280px at 50% 100%,rgba(240,49,74,0.13),transparent);pointer-events:none;}
+  .eyebrow{display:inline-block;font-size:11px;letter-spacing:.2em;text-transform:uppercase;color:var(--red);font-weight:700;margin-bottom:14px;}
+  h1.title{font-size:clamp(24px,4.5vw,44px);font-weight:900;letter-spacing:-0.02em;line-height:1.05;margin-bottom:14px;}
+  h1.title em{color:var(--red);font-style:normal;}
+  h1.title .era{font-size:0.55em;font-weight:700;color:var(--text-dim);letter-spacing:0;}
+  .sub{color:var(--text-dim);font-size:15px;max-width:500px;margin:0 auto;line-height:1.6;}
+
+  .wrap{max-width:960px;margin:0 auto;padding:32px 20px 80px;}
+
+  /* Loading bar */
+  .load-bar{height:3px;background:var(--line);border-radius:2px;margin-bottom:28px;overflow:hidden;display:none;}
+  .load-bar.active{display:block;}
+  .load-fill{height:100%;width:0%;background:var(--red);border-radius:2px;transition:width .4s ease;animation:loadpulse 1.2s ease infinite;}
+  @keyframes loadpulse{0%{width:0%}50%{width:70%}100%{width:90%}}
+
+  .section-label{font-size:11px;letter-spacing:.15em;text-transform:uppercase;color:var(--text-muted);font-weight:700;margin-bottom:14px;}
+  .teamgrid{display:grid;grid-template-columns:repeat(auto-fill,minmax(138px,1fr));gap:8px;margin-bottom:40px;}
+  .teambtn{
+    background:var(--panel);border:1px solid var(--line);border-radius:8px;
+    padding:12px 11px;color:var(--text);font-size:12.5px;font-weight:700;
+    cursor:pointer;text-align:left;transition:border-color .15s,background .15s;line-height:1.3;
+  }
+  .teambtn:hover{border-color:var(--red-dim);background:var(--panel-2);}
+  .teambtn.active{border-color:var(--red);background:var(--panel-2);box-shadow:0 0 0 1px var(--red);}
+  .teambtn .count{display:block;font-size:11px;color:var(--text-dim);margin-top:4px;font-weight:500;}
+  .teambtn.active .count{color:var(--red);opacity:.8;}
+
+  .teamhead{display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:8px;padding-bottom:14px;border-bottom:1px solid var(--line);margin-bottom:20px;}
+  .teamhead h2{font-size:24px;font-weight:900;letter-spacing:-0.01em;}
+  .totalvotes{font-size:12px;color:var(--text-dim);background:var(--panel);border:1px solid var(--line);border-radius:20px;padding:4px 12px;font-weight:600;}
+  .helptext{color:var(--text-dim);font-size:13px;margin-bottom:18px;}
+
+  .moment{border:1px solid var(--line);border-radius:10px;background:var(--panel);padding:14px 16px;margin-bottom:8px;display:flex;align-items:center;gap:14px;transition:border-color .15s,background .15s;}
+  .moment:hover{background:var(--panel-2);}
+  .moment.voted{border-color:var(--red-dim);background:var(--panel-2);}
+  .moment.other-moment{align-items:flex-start;flex-wrap:wrap;}
+  .moment .rank{font-weight:900;font-size:18px;color:var(--text-muted);width:26px;flex-shrink:0;text-align:center;}
+  .moment.voted .rank{color:var(--red);}
+  .moment .body{flex:1;min-width:0;}
+  .moment .label{font-size:15px;font-weight:700;line-height:1.3;}
+  .moment .sublabel{font-size:12px;color:var(--text-dim);margin-top:3px;}
+  .barwrap{height:5px;background:var(--line);border-radius:3px;margin-top:10px;overflow:hidden;}
+  .bar{height:100%;background:linear-gradient(90deg,var(--red-dim),var(--red));border-radius:3px;transition:width .5s ease;}
+  .pct{font-size:11.5px;color:var(--text-muted);margin-top:6px;display:block;}
+
+  .votebtn{flex-shrink:0;background:var(--red);color:#fff;border:none;border-radius:7px;padding:9px 18px;font-weight:800;font-size:13px;cursor:pointer;transition:background .15s,transform .1s;white-space:nowrap;}
+  .votebtn:hover{background:#FF3D56;}
+  .votebtn:active{transform:scale(.96);}
+  .votebtn.loading{background:var(--red-dim);cursor:wait;}
+  .votebtn.done{background:transparent;color:var(--text-dim);border:1px solid var(--line);cursor:default;}
+  .votebtn.done:hover{background:transparent;}
+  .votebtn.done.myvote{color:var(--red);border-color:var(--red-dim);}
+
+  .changebtn{display:block;margin-top:10px;width:100%;background:transparent;color:var(--text-muted);border:none;font-size:12px;font-weight:600;cursor:pointer;text-align:center;padding:4px 0;text-decoration:underline;text-underline-offset:3px;transition:color .15s;}
+  .changebtn:hover{color:var(--text-dim);}
+
+  .other-expand{width:100%;margin-top:12px;display:none;flex-direction:column;gap:10px;}
+  .other-expand.open{display:flex;}
+  .other-input{width:100%;background:var(--navy-mid);border:1px solid var(--line);border-radius:7px;color:var(--text);font-size:14px;padding:10px 13px;resize:none;font-family:inherit;outline:none;transition:border-color .15s;}
+  .other-input:focus{border-color:var(--red-dim);}
+  .other-input::placeholder{color:var(--text-muted);}
+  .other-submit{align-self:flex-end;background:var(--red);color:#fff;border:none;border-radius:7px;padding:9px 20px;font-weight:800;font-size:13px;cursor:pointer;transition:background .15s;}
+  .other-submit:hover{background:#FF3D56;}
+
+  .error-banner{background:#2A1520;border:1px solid var(--red-dim);border-radius:8px;padding:12px 16px;color:var(--text-dim);font-size:13px;margin-bottom:16px;display:none;}
+  .error-banner.show{display:block;}
+
+  footer{text-align:center;color:var(--text-muted);font-size:12px;padding-top:40px;border-top:1px solid var(--line);margin-top:48px;}
+
+  @media(max-width:500px){
+    .moment:not(.other-moment){flex-wrap:wrap;}
+    .moment:not(.other-moment) .votebtn{width:100%;order:3;}
+    .header-inner{padding:12px 16px;}
+    .lightning-logo{height:40px;}
+  }
+</style>
+</head>
+<body>
+
+<header class="top">
+  <div class="header-inner">
+    <img class="lightning-logo" src="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAABDgAAAQ4CAYAAADsEGyPAABFSElEQVR4AezdvXIbabag6w8gRVJ9jOq6gENGdNQZqyTrbEuUN0ZHiFcgmseizGNRXnnkFZBXQJljUV57Ja89aazxxLmBltEkxZ/EYAFClapaPySQAHJlPk+EontmtrGnxEomXnzrW73yt78PCgAAAEBi/QIAAACQnMABAAAApCdwAAAAAOkJHAAAAEB6AgcAAACQnsABAAAApCdwAAAAAOkJHAAAAEB6AgcAAACQnsABAAAApCdwAAAAAOkJHAAAAEB6AgcAAACQnsABAAAApCdwAAAAAOkJHAAAAEB6AgcAAACQnsABAAAApCdwAAAAAOkJHAAAAEB6AgcAAACQnsABAAAApCdwAAAAAOkJHAAAAEB6AgcAAACQnsABAAAApCdwAAAAAOkJHAAAAEB6AgcAAACQnsABAAAApCdwAAAAAOkJHAAAAEB6AgcAAACQnsABAAAApCdwAAAAAOkJHAAAAEB6AgcAAACQnsABAAAApCdwAAAAAOkJHAAAAEB6AgcAAACQnsABAAAApCdwAAAAAOkJHAAAAEB6AgcAAACQnsABAAAApCdwAAAAAOkJHAAAAEB6AgcAAACQnsABAAAApCdwAAAAAOkJHAAAAEB6AgcAAACQnsABAAAApCdwAAAAAOkJHAAAAEB6AgcAAACQnsABAAAApCdwAAAAAOkJHAAAAEB6AgcAAACQnsABAAAApCdwAAAAAOkJHAAAAEB6AgcAAACQnsABAAAApCdwAAAAAOkJHAAAAEB6AgcAAACQnsABAAAApCdwAAAAAOkJHAAAAEB6AgcAAACQnsABAAAApCdwAAAAAOkJHAAAAEB6AgcAAACQnsABAAAApCdwAAAAAOkJHAAAAEB6AgcAAACQnsABAAAApCdwAEABACA7gQMAAABIT+AAAAAA0hM4AAAAgPQEDgAAACA9gQMAAABIT+AAAAAA0hM4AAAAgPQEDgAAACA9gQMAAABIT+AAAAAA0hM4AAAAgPQEDgAAACA9gQMAAABIT+AAAAAA0hM4AAAAgPQEDgAAACA9gQMAAABIT+AAAAAA0hM4AAAAgPQEDgAAACA9gQMAAABIT+AAAAAA0hM4AAAAgPQEDgAAACA9gQMAAABIT+AAAAAA0hM4AAAAgPQEDgAAACA9gQMAAABIT+AAAAAA0hM4AAAAgPQEDgAAACA9gQMAAABIT+AAAAAA0hM4AAAAgPQEDgAAACA9gQMAAABIT+AAAAAA0hM4AAAAgPQEDgAAACA9gQMAAABIT+AAAAAA0hM4AAAAgPQEDgAAACA9gQMAAABIT+AAAAAA0hM4AAAAgPQEDgAAACA9gQMAAABIT+AAAAAA0hM4AAAAgPQEDgAAACA9gQMAAABIT+AAAAAA0hM4AAAAgPQEDgAAACA9gQMAAABIT+AAAAAA0hM4AAAAgPQEDgAAACA9gQMAAABIT+AAAAAA0hM4AAAAgPQEDgAAACA9gQMAAABIT+AAAAAA0hM4AAAAgPQEDgAAACA9gQMAAABIT+AAAAAA0hM4AAAAgPQEDgAAACA9gQMAAABIT+AAAAAA0hM4AAAAgPQEDgAAACA9gQMAAABIT+AAAAAA0hM4AAAAgPQEDgAAACA9gQMAAABIT+AAAAAA0hM4AAAAgPQEDgAAACA9gQMAAABIT+AAAAAA0hM4AAAAgPQEDgAAACA9gQMAAABIT+AAAAAA0hM4AAAAgPQEDgAAACA9gQMAAABIT+AAAAAA0hM4AAAAgPQEDgAAACA9gQMAAABIT+AAAAAA0hM4AAAAgPQEDgAAACA9gQMAAABIT+AAAAAA0hM4AAAAgPQEDgAAACA9gQMAAABIT+AAAAAA0hM4AAAAgPQEDgAAACA9gQMAAABIT+AAAAAA0hM4AAAAgPQEDgAAACA9gQMAAABIT+AAAAAA0hM4AAAAgPQEDgAAACA9gQMAAABIT+AAAAAA0hM4AAAAgPQEDgAAACA9gQMAAABIT+AAAAAA0hM4AAAAgPQEDgAAACA9gQMAAABIT+AAAAAA0hM4AAAAgPQEDgAAACA9gQMAAABIT+AAAAAA0hM4AAAAgPQEDgAAACA9gQMAAABIT+AAAAAA0hM4AAAAgPQEDgAAACA9gQMAAABIT+AAAAAA0hM4AAAAgPQEDgAAACA9gQMAAABIT+AAAAAA0hM4AAAAgPQEDgAAACA9gQMAAABIT+AAAAAA0hM4AAAAgPQEDgAAACA9gQMAAABIT+AAAAAA0hM4AAAAgPQEDgAAACA9gQMAAABIT+AAAAAA0hM4AAAAgPQEDgAAACA9gQMAAABIT+AAAAAA0hM4AAAAgPQEDgAAACA9gQMAAABIT+AA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egIHAAAAkJ7AAQAAAKQncAAAAADpCRwAAABAegIHAAAAkJ7AAQAAAKQncAAAAADpCRwAAABAegIHAAAAkJ7AAQAAAKQncAAAAADpCRwAAABAegIHAAAAkJ7AAQAAAKQncAAAAADpCRwAAABAegIHAAAAkJ7AAQAAAKQncAAAAADpCRwAAABAegIHAAAAkJ7AAQAAAKQncAAAAADpCRwAAABAegIHAAAAkJ7AAQAAAKQncAAAAADpCRwAAABAegIHAAAAkJ7AAQAAAKQncAAAAADpCRwAAABAegIHAAAAkJ7AAQAAAKQncAAAAADpCRwAAABAegIHAAAAkJ7AAQAAAKQncAAAAADpCRwAAABAegIHAAAAkJ7AAQAAAKQncAAAAADpCRwAAABAegIHAAAAkJ7AAQAAAKQncAAAAADpCRwAAABAegIHAAAAkJ7AAQAAAKQncAAAAADpCRwAAABAegIHAAAAkJ7AAQAAAKQncAAAAADpCRwAAABAegIHAAAAkJ7AAQAAAKQncAAAAADpCRwAAABAegIHAAAAkJ7AAQAAAKQncAAAAADpCRwAAABAegIHAAAAkJ7AAQAAAKQncAAAAADpCRwAAABAegIHAAAAkJ7AAQAAAKQncAAAAADpCRwAAABAegIHAAAAkJ7AAQAAAKQncAAAAADpCRwAAABAegIHAAAAkJ7AAQAAAKQncAAAAADpCRwAAABAegIHAAAAkJ7AAQAAAKQncAAAAADpCRwAAABAegIHAAAAkJ7AAQAAAKQncAAAAADpCRwAAABAegIHAAAAkJ7AAQAAAKQncAAAAADpCRwAAABAegIHAAAAkJ7AAQAAAKQncAAAAADpCRwAAABAegIHAAAAkJ7AAQAAAKQncAAAAADpCRwAAABAegIHAAAAkJ7AAQAAAKQncAAAAADpCRwAAABAegIHAAAAkJ7AAQAAAKQncAAAAADpCRwAAABAegIHAAAAkJ7AAQAAAKQncAAAAADpCRwAAABAegIHAAAAkJ7AAQAAAKQncAAAAADpCRwAAABAegIHAAAAkJ7AAQAAAKQncAAAAADpCRwAAABAegIHAAAAkJ7AAQAAAKQncAAAAADpCRwAAABAegIHAAAAkJ7AAQAAAKQncAAAAADpCRwAAABAegIHAAAAkJ7AAQAAAKQncAAAAADpCRwAAABAegIHAAAAkJ7AAQAAAKQncAAAAADpCRwAAABAegIHAAAAkJ7AAQAAAKQncAAAAADpCRwAAABAegIHAAAAkJ7AAQAAAKQncAAAAADpCRwAAABAegIHAAAAkJ7AAQAAAKQncAAAAADpCRwAAABAegIHAAAAkJ7AAQAAAKQncAAAAADpCRwAAABAegIHAAAAkJ7AAQAAAKQncAAAAADpCRwAAABAegIHAAAAkJ7AAQAAAKQncAAAAADpCRwAAABAegIHAAAAkJ7AAQAAAKQncAAAAADpCRwAAABAegIHAAAAkJ7AAQAAAKQncAAAAADpCRwAAABAegIHAAAAkJ7AAQAAAKQncAAAAADpCRwAAABAegIHAAAAkJ7AAQAAAKQncAAAAADpCRwAAABAegIHAAAAkJ7AAQAAAKQncAAAAADpCRwAAABAegIHAAAAkJ7AAQAAAKQncAAAAADpCRwAAABAegIHAAAAkJ7AAQAAAKQncAAAAADpCRwAAABAegIHAAAAkJ7AAQAAAKQncAAAAADpCRwAAABAegIHAAAAkJ7AAQAAAKQncAAAAADpCRwAAABAegIHAAAAkJ7AAQAAAKQncAAAAADpCRwAAABAegLH/2nHDkgAAAAABP1/3Y5AZwgAAADsCQ4AAABgT3AAAAAAe4IDAAAA2BMcAAAAwJ7gAAAAAPYEBwAAALAnOAAAAIA9wQEAAADsCQ4AAABgT3AAAAAAe4IDAAAA2BMcAAAAwJ7gAAAAAPYEBwAAALAnOAAAAIA9wQEAAADsCQ4AAABgT3AAAAAAe4IDAAAA2BMcAAAAwJ7gAAAAAPYEBwAAALAnOAAAAIA9wQEAAADsCQ4AAABgT3AAAAAAe4IDAAAA2BMcAAAAwJ7gAAAAAPYEBwAAALAnOAAAAIC9ACwjXXYh1PMmAAAAAElFTkSuQmCC" alt="RotoWire">
+  </div>
+</header>
+
+<div class="hero">
+  <div class="eyebrow">Reader's Choice &middot; All 32 Teams</div>
+  <h1 class="title">The Most <em>Franchise-Defining</em><br>Moment of the Modern Era <span class="era">(Last 10 Years)</span></h1>
+  <p class="sub">One vote per team. Pick the play, the pick, the signing, or the press conference that changed everything.</p>
+</div>
+
+<div class="wrap">
+  <div class="load-bar" id="loadBar"><div class="load-fill"></div></div>
+  <div class="error-banner" id="errBanner"></div>
+
+  <div class="section-label">Select a team</div>
+  <div class="teamgrid" id="teamgrid"></div>
+  <main id="main"></main>
+
+  <footer>Built by the <strong style="color:var(--text-dim)">RotoWire Media Team</strong> &middot; Votes are live and shared across all visitors.</footer>
+</div>
+
+<script>
+const DATA = {
+"Arizona Cardinals":["Larry Fitz 75-Yard OT Catch (2016)","Drafting Kyler Murray (2019)","Drafting Josh Rosen (2018)","Hail Mary Murray to Hopkins (2020)","David Johnson wrist injury (2017)","Kliff Kingsbury hired as head coach (2019)"],
+"Atlanta Falcons":["James White OT Touchdown (2017)","Julian Edelman's Diving Catch (2017)","Opening of Mercedes-Benz Stadium (2017)","Todd Gurley scoring TD resulting in comeback (2020)","Matt Ryan wins MVP (2016)","Julio Jones 73-yard TD to go up 31-0 in NFCC (2017)","Drafting Kyle Pitts 4th overall (2021)"],
+"Baltimore Ravens":["Joe Flacco's hip injury (2018)","Lamar's 47-Yard TD Run vs. Chiefs (2019)","Ravens Draft Lamar Jackson 32nd Overall (2018)","Mark Andrews Drops Two-Point Conversion vs. Bills (2024)","Lamar Jackson Wins Unanimous MVP (2019)","Lamar's 5 TD performance vs. Dolphins, Week 1 (2019)"],
+"Buffalo Bills":["Bills End 17-Year Playoff Drought (2017)","Josh Allen Drafted 7th Overall (2018)","13 Seconds (2021 AFCDG vs. Chiefs)","Damar Hamlin Cardiac Arrest vs. Bengals (Jan 2023)","Josh Allen's 4th Down Scramble that falls short (2022)","Brandin Cooks catch becoming interception vs Broncos (2025)"],
+"Carolina Panthers":["Von Miller strip sack on Cam (2016)","David Tepper becoming owner (2018)","Ron Rivera being fired (2019)","Cam Newton being released (2020)","McCaffrey's high ankle sprain (2020)","Acquisition of 1st Overall Pick (2023)","Frank Reich Being Fired (2023)"],
+"Chicago Bears":["Drafting Mitchell Trubisky 2nd Overall (2017)","Cody Parkey's Double Doink (2019 Wild Card)","Drafting Caleb Williams 1st Overall (2024)","Bears' failed clock management vs. Washington (2024)","Caleb Williams' 4th-and-8 completion vs Packers (2026)"],
+"Cincinnati Bengals":["Vontaze Burfict Penalty vs Steelers WC (2016)","Marvin Lewis Finally Gets Fired (2018)","Joe Burrow Drafted 1st Overall (2020)","Evan McPherson walkoff FG in AFCCG (2022)","Joe Burrow's Wrist Injury Ends 2023 Season (2023)"],
+"Cleveland Browns":["Drafting Myles Garrett (2017)","Corey Coleman dropped pass to go 0-16 (2017)","Fumble Recovery Touchdown To Start 2020 Wild Card Win","Hue Jackson Gets Fired (2018)","Deshaun Watson Trade (2022)","Baker Mayfield Comeback vs. Jets In First Game (2018)","Myles Garrett's 23rd sack on Burrow for record (2026)"],
+"Dallas Cowboys":["Dak Prescott Pick 6 vs 49ers in Divisional (2022)","Tony Romo's back injury in preseason (2016)","Brett Maher missing 4 extra points vs Buccaneers WC (2023)","DaRon Bland's Record-Breaking Pick-Six (2023)","Drafting Dak Prescott (2016)"],
+"Denver Broncos":["Russell Wilson Gets Benched (2024)","Russell Wilson's \"Broncos Country, Let's Ride\" (2022)","Von Miller strip sack on Cam Newton (2016)","Nathaniel Hackett Gets Fired After 15 Games (2023)","Sean Payton hired as HC (2023)","Bo Nix drafted 12th overall (2024)","Kendall Hinton Starts at QB vs Saints (2020)","Josh Allen INT in OT (2026)"],
+"Detroit Lions":["Matthew Stafford - Jared Goff Trade (2021)","Dan Campbell Hired as HC (2021)","Jamaal Williams TD To Sweep Packers & Eliminate Them (2022)","Taylor Decker 2-Pt Play Called Back For Loss (2023)","Lions Win First Playoff Game Since 1992 (2023)"],
+"Green Bay Packers":["Aaron Rodgers' \"Run the Table\" Speech (2016)","Rodgers Breaks Collarbone vs Vikings (2017)","Drafting Jordan Love 26th Overall (2020)","Rodgers' \"I Own You\" to Bears (2021)","Aaron Rodgers Trade To Jets (2023)","Rodgers' Hail Mary vs Giants Wild Card (2016)"],
+"Houston Texans":["Trading Hopkins for a 2nd Rd Pick & David Johnson (2020)","Texans Draft Will Anderson and C.J. Stroud (2023)","Watson's sexual misconduct lawsuits become public (2021)","Mahomes 4th TD Pass In 2nd Quarter of AFCD (2019)"],
+"Indianapolis Colts":["Andrew Luck Retires at 29 (2019)","Drafting Anthony Richardson 4th Overall (2023)","Josh McDaniels backing out of HC Job (2018)","Jeff Saturday's win in first interim HC appearance (2022)","Phillip Rivers returning out of retirement (2025)"],
+"Jacksonville Jaguars":["Myles Jack Fumble Recovery Called Dead (2018 AFCCG)","Urban Meyer's Bar Video (2021)","Trevor Lawrence Drafted 1st Overall (2021)","Riley Patterson FG To Finalize Comeback vs Chargers (2023)","Jaguars first London sellout (2017)","Telvin Smith's fumble return TD vs Steelers (2018)"],
+"Kansas City Chiefs":["Drafting Patrick Mahomes (2017)","Taylor Swift Shows Up To Arrowhead (2024)","Mahomes to Mecole Hardman in OT (2024)","13-Second Comeback vs Bills (2022)","Damien Williams SB Sealing TD (2020)","Mahomes' no-look pass vs Ravens (2018)","Brett Veach being named GM (2017)"],
+"Las Vegas Raiders":["Oakland Raiders Play Final Game (2019)","Gruden Resigns Over Leaked Emails (2021)","Release of Antonio Brown (2019)","Derek Carr's Broken Leg vs Colts (2016)","Allegiant Stadium opens (2020)","Daniel Carlson kick vs Chargers to make playoffs (2021)"],
+"Los Angeles Chargers":["Chargers Announce Move to Los Angeles (2017)","Tyrod Taylor Nerve Injection Incident (2020)","Staley's 4th Down Call vs. Jaguars Up 27-0 (2023)","Rivers' overtime interception vs Patriots divisional (2019)","Jim Harbaugh hired as HC (2024)"],
+"Los Angeles Rams":["Rams Move from St. Louis to Los Angeles (2016)","Sean McVay Hired as HC at Age 30 (2017)","Rams Trade Jared Goff and Picks for Matthew Stafford (2021)","Goff to Everett 40-Yard TD in 54-51 Win vs. Chiefs (2018)","Aaron Donald's strip on 3rd and 1 in final minute of SB (2022)","The Robey-Coleman no-call in the NFC Championship (2019)"],
+"Miami Dolphins":["The Miami Miracle vs Patriots (2018)","Tua's Concussion vs Bengals (2022)","Mike McDaniel Hired as HC (2022)","Tyreek Hill Trade (2022)","Achane's 67-yard TD run to hit 70 points (2023)","Brian Flores lawsuit (2022)"],
+"Minnesota Vikings":["Stefon Diggs' Minneapolis Miracle vs Saints (2017)","Justin Jefferson's One-Handed Diving Catch vs Bills (2022)","Hiring Kevin O'Connell (2022)","Dalvin Cook's 64 Yard TD To Tie Colts In 33-0 Comeback (2022)","Drafting Justin Jefferson (2020)","Sam Darnold's 97 yard TD pass to solidify starting job (2024)","Justin Jefferson NFL Debut TD with Griddy (2020)"],
+"New England Patriots":["Tom Brady's 4-Game Deflategate Suspension (2016)","Julian Edelman's Helmet Catch in Super Bowl LI (2017)","James White's Game-Winning OT TD in Super Bowl LI (2017)","Tom Brady Leaves in Free Agency for Buccaneers (2020)","Stephon Gilmore's game-sealing interception in Super Bowl LIII (2019)","Drafting Drake Maye (2024)"],
+"New Orleans Saints":["The NFC Championship No-Call — Robey-Coleman's uncalled PI (2019)","Drew Brees throws #540 to break all-time passing TD record (2018)","Drew Brees breaks the NFL all-time passing yards record (2018)","Kamara's 6th rushing TD — Christmas Day vs Vikings (2020)","Cameron Jordan's strip sack on Aaron Rodgers vs Packers Wild Card (2020)","Drew Brees announces retirement on Instagram (2021)"],
+"New York Giants":["Eli Manning benched for Daniel Jones after 0-2 start (2019)","Eli Manning announces retirement (Jan 2020)","Saquon Barkley tears his ACL vs Bears (Sept 2020)","Giants let Saquon Barkley walk to Eagles in free agency (March 2024)","Daniel Jones' 80-yard run vs Eagles on Thursday Night Football (Oct 2020)","Barkley's go-ahead 2-yard TD run to seal Wild Card win (2023)"],
+"New York Jets":["Adam Gase hired (2019)","Drafting Zach Wilson (2021)","Aaron Rodgers Achilles Tear (2023)","Sam Darnold First Pass Pick 6 (2018)","Week 15 4th Down Stop Against Rams To Win (2020)","Marcus Jones (Pats) 84-Yard Punt Return TD (2022)","\"Hell Mary\" Pick 6 on Halftime Hail Mary (2023)"],
+"Philadelphia Eagles":["Nick Foles' Philly Special (Super Bowl LII)","Carson Wentz's ACL tear vs Rams (2017)","Brady's fumble recovered by Eagles (2018)","Hurts' 4th-and-1 QB sneak (the \"tush push\" debut) vs Saints (2022)","Saquon Barkley signed in free agency (2024)","Howie Roseman getting GM duties back (2016)"],
+"Pittsburgh Steelers":["The Immaculate Extension: Antonio Brown extends for TD vs Ravens on Christmas (2016)","T.J. Watt's record-tying 22.5th sack (2022)","Ben Roethlisberger's final home game tearful exit vs Browns (Jan 2022)","Le'Veon Bell doesn't show up for Week 1 (Sept 2018)","Antonio Brown's Facebook Live of Tomlin's locker room speech (Jan 2017)","Jesse James' overturned touchdown vs Patriots (2016)","Roethlisberger's INT returned for TD by Karl Joseph vs Browns (Jan 2021)"],
+"San Francisco 49ers":["Kyle Shanahan Hired As Head Coach (2017)","Brock Purdy drafted as \"Mr. Irrelevant\" (2022)","Damien Williams' TD run seals Chiefs Super Bowl win (2020)","Purdy's first career TD pass in relief vs Dolphins (2022)","Christian McCaffrey trade from Panthers at deadline (Oct 2022)","Trading for Jimmy Garoppolo (2017)","The Trey Lance Gamble (2021)"],
+"Seattle Seahawks":["Tyler Lockett's Impossible Catch vs Rams (2021)","DK Metcalf Chases Down Budda Baker (2020)","Mike Macdonald hired (2024)","Pete Carroll Fired (2024)","Signing Sam Darnold (2025)","Uchenna Nwosa Pick 6 in Super Bowl (2026)"],
+"Tampa Bay Buccaneers":["Tom Brady Signs with Buccaneers (2020)","Signing Bruce Arians as HC (2019)","Tom Brady's Rush TD To Start Bucs Stint (2020)","Brady To Scottie Miller Hail Mary vs. Packers in NFCCG (2020)","Brady to Gronkowski 1st TD in Super Bowl (2020)","Mahomes' Side-Arm Mid-Air Incompletion (2020)","Bucs Stopping Tush Push vs. Eagles in WC Upset (2023)"],
+"Tennessee Titans":["Mariota's Touchdown Pass to Himself vs Chiefs (2017)","Derrick Henry's 99-Yard Touchdown Run vs Jaguars (2018)","Henry's stiff arm on Marlon Humphrey (2020)","Dion Lewis fumble recovered by Titans (2018)","Mike Vrabel fired (2024)","Henry's Six-Yard Run to Cross 2,000 Yards (2021)"],
+"Washington Commanders":["Team Becomes Washington Football Team (2020)","Alex Smith Returns to Play vs Rams (2020)","Dan Snyder Sells the Team (2023)","Drafting Jayden Daniels 2nd Overall (2024)","Jayden Daniels' Hail Mary vs Bears (2024)","Team Becoming Commanders (2022)","Zane Gonzalez's 37-yard walk-off banked field goal (2024)","Quan Martin's pick six in upset vs. Lions"]
+};
+
+const TEAM_ORDER = Object.keys(DATA);
+const SESSION_KEY = 'fdm_session_v1';
+const VOTED_KEY   = 'fdm_voted_v1';
+const OTHER_KEY   = 'fdm_other_v1';
+
+// Generate or load persistent session ID
+function getSession(){
+  let s = localStorage.getItem(SESSION_KEY);
+  if(!s){ s = crypto.randomUUID(); localStorage.setItem(SESSION_KEY, s); }
+  return s;
+}
+const SESSION_ID = getSession();
+
+function loadVoted(){try{return JSON.parse(localStorage.getItem(VOTED_KEY))||{};}catch(e){return {};}}
+function saveVoted(v){localStorage.setItem(VOTED_KEY,JSON.stringify(v));}
+function loadOther(){try{return JSON.parse(localStorage.getItem(OTHER_KEY))||{};}catch(e){return {};}}
+function saveOther(v){localStorage.setItem(OTHER_KEY,JSON.stringify(v));}
+
+let voted    = loadVoted();
+let otherMap = loadOther();
+let serverCounts = {}; // { team: [count, count, ...] }
+let currentTeam  = TEAM_ORDER[0];
+let isLoading    = false;
+
+const OTHER_IDX = t => DATA[t].length;
+
+function totalFor(team){
+  const c = serverCounts[team];
+  if(!c) return 0;
+  return c.reduce((a,b)=>a+b,0);
+}
+
+function countsFor(team){
+  const needed = DATA[team].length + 1;
+  const c = serverCounts[team] || [];
+  while(c.length < needed) c.push(0);
+  return c;
+}
+
+// ── API ──
+async function fetchAllVotes(){
+  setLoading(true);
+  try{
+    const r = await fetch('/api/votes');
+    if(!r.ok) throw new Error('Failed to load votes');
+    const data = await r.json();
+    serverCounts = data;
+  } catch(e){
+    showError('Could not load live votes. Showing local data.');
+  }
+  setLoading(false);
+  render();
+}
+
+async function castVote(team, momentIndex, momentText){
+  // Optimistic update
+  const c = countsFor(team);
+  const prev = voted[team];
+  if(prev !== undefined && prev !== momentIndex){
+    c[prev] = Math.max(0, c[prev] - 1);
+  }
+  if(prev !== momentIndex) c[momentIndex] = (c[momentIndex]||0) + 1;
+  serverCounts[team] = c;
+  voted[team] = momentIndex;
+  if(momentText) otherMap[team] = momentText;
+  saveVoted(voted);
+  saveOther(otherMap);
+  render();
+
+  // Sync to server
+  try{
+    const r = await fetch('/api/votes', {
+      method:'POST',
+      headers:{'Content-Type':'application/json'},
+      body: JSON.stringify({sessionId: SESSION_ID, team, momentIndex, momentText: momentText||null})
+    });
+    if(r.ok){
+      const data = await r.json();
+      if(data.counts) serverCounts[team] = data.counts;
+      render();
+    }
+  } catch(e){
+    showError('Vote saved locally but could not sync to server.');
+  }
+}
+
+function setLoading(on){
+  isLoading = on;
+  document.getElementById('loadBar').classList.toggle('active', on);
+}
+function showError(msg){
+  const el = document.getElementById('errBanner');
+  el.textContent = msg;
+  el.classList.add('show');
+  setTimeout(()=>el.classList.remove('show'), 4000);
+}
+
+// ── RENDER ──
+function escHtml(s){return s.replace(/&/g,"&amp;").replace(/</g,"&lt;").replace(/>/g,"&gt;").replace(/"/g,"&quot;");}
+
+function renderTeamGrid(){
+  const grid = document.getElementById('teamgrid');
+  grid.innerHTML = '';
+  TEAM_ORDER.forEach(team=>{
+    const btn = document.createElement('button');
+    btn.className = 'teambtn' + (team===currentTeam?' active':'');
+    const total = totalFor(team);
+    const check = voted[team]!==undefined ? ' ✓' : '';
+    btn.innerHTML = escHtml(team) + `<span class="count">${total} vote${total===1?'':'s'}${check}</span>`;
+    btn.addEventListener('click',()=>{
+      currentTeam = team;
+      render();
+      window.scrollTo({top:document.getElementById('main').offsetTop-24,behavior:'smooth'});
+    });
+    grid.appendChild(btn);
+  });
+}
+
+function renderMain(){
+  const main = document.getElementById('main');
+  main.innerHTML = '';
+  const moments    = DATA[currentTeam];
+  const teamCounts = countsFor(currentTeam);
+  const total      = teamCounts.reduce((a,b)=>a+b,0);
+  const votedIdx   = voted[currentTeam];
+  const otherIdx   = OTHER_IDX(currentTeam);
+  const hasVoted   = votedIdx !== undefined;
+
+  const head = document.createElement('div');
+  head.className = 'teamhead';
+  head.innerHTML = `<h2>${escHtml(currentTeam)}</h2><span class="totalvotes">${total} vote${total===1?'':'s'} cast</span>`;
+  main.appendChild(head);
+
+  const help = document.createElement('div');
+  help.className = 'helptext';
+  help.textContent = 'Vote for the single moment that defined this franchise most.';
+  main.appendChild(help);
+
+  const items = moments.map((label,i)=>({label,i,count:teamCounts[i]||0,isOther:false}));
+  items.push({label:'Other',i:otherIdx,count:teamCounts[otherIdx]||0,isOther:true});
+  const sorted = [...items.filter(m=>!m.isOther).sort((a,b)=>b.count-a.count), items.find(m=>m.isOther)];
+
+  sorted.forEach((m, rank)=>{
+    const pct = total>0 ? Math.round((m.count/total)*100) : 0;
+    const isVotedThis = votedIdx===m.i;
+    const row = document.createElement('div');
+    row.className = 'moment'+(isVotedThis?' voted':'')+(m.isOther?' other-moment':'');
+
+    const rankDiv = document.createElement('div');
+    rankDiv.className = 'rank';
+    rankDiv.innerHTML = m.isOther ? '✏️' : (isVotedThis ? `<span style="color:var(--red)">✓</span>` : (rank+1));
+
+    const bodyDiv = document.createElement('div');
+    bodyDiv.className = 'body';
+    const sub = m.isOther && isVotedThis && otherMap[currentTeam]
+      ? `<div class="sublabel">Your pick: <strong style="color:var(--text)">${escHtml(otherMap[currentTeam])}</strong></div>`
+      : m.isOther ? `<div class="sublabel">Don't see your moment? Tell us.</div>` : '';
+    bodyDiv.innerHTML = `<div class="label">${m.isOther?'Other':escHtml(m.label)}</div>${sub}<div class="barwrap"><div class="bar" style="width:${pct}%"></div></div><span class="pct">${m.count} vote${m.count===1?'':'s'} · ${pct}%</span>`;
+
+    row.appendChild(rankDiv);
+    row.appendChild(bodyDiv);
+
+    if(hasVoted){
+      const btn = document.createElement('button');
+      btn.className = 'votebtn done'+(isVotedThis?' myvote':'');
+      btn.textContent = isVotedThis?(m.isOther?'Your pick':'Your vote'):'Voted';
+      btn.disabled = true;
+      row.appendChild(btn);
+    } else if(!m.isOther){
+      const btn = document.createElement('button');
+      btn.className = 'votebtn';
+      btn.textContent = 'Vote';
+      btn.addEventListener('click', async ()=>{
+        btn.classList.add('loading');
+        btn.textContent = 'Voting…';
+        await castVote(currentTeam, m.i, null);
+      });
+      row.appendChild(btn);
+    } else {
+      const btn = document.createElement('button');
+      btn.className = 'votebtn';
+      btn.textContent = 'Write in';
+      btn.style.cssText = 'align-self:flex-start;';
+      const expand = document.createElement('div');
+      expand.className = 'other-expand';
+      const textarea = document.createElement('textarea');
+      textarea.className = 'other-input';
+      textarea.placeholder = 'Describe the moment…';
+      textarea.rows = 2; textarea.maxLength = 200;
+      const submitBtn = document.createElement('button');
+      submitBtn.className = 'other-submit';
+      submitBtn.textContent = 'Submit vote';
+      expand.appendChild(textarea); expand.appendChild(submitBtn);
+      btn.addEventListener('click',()=>{expand.classList.toggle('open');if(expand.classList.contains('open'))textarea.focus();});
+      submitBtn.addEventListener('click', async ()=>{
+        const val = textarea.value.trim();
+        if(!val){textarea.focus();return;}
+        submitBtn.textContent = 'Submitting…';
+        await castVote(currentTeam, otherIdx, val);
+      });
+      row.appendChild(btn); row.appendChild(expand);
+    }
+    main.appendChild(row);
+  });
+
+  // Change vote button
+  if(hasVoted){
+    const changeWrap = document.createElement('div');
+    changeWrap.style.cssText = 'text-align:center;margin-top:12px;';
+    const changeBtn = document.createElement('button');
+    changeBtn.className = 'changebtn';
+    changeBtn.textContent = '↩ Change my vote for this team';
+    changeBtn.addEventListener('click',()=>{
+      delete voted[currentTeam];
+      delete otherMap[currentTeam];
+      saveVoted(voted);
+      saveOther(otherMap);
+      render();
+    });
+    changeWrap.appendChild(changeBtn);
+    main.appendChild(changeWrap);
+  }
+}
+
+function render(){ renderTeamGrid(); renderMain(); }
+
+// Boot — fetch live counts then render
+fetchAllVotes();
+</script>
+</body>
+</html>
