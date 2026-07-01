@@ -1,7 +1,7 @@
 const { Redis } = require('@upstash/redis');
 const kv = new Redis({
-  url: process.env.UPSTASH_REDIS_REST_URL,
-  token: process.env.UPSTASH_REDIS_REST_TOKEN,
+  url: process.env.KV_REST_API_URL,
+  token: process.env.KV_REST_API_TOKEN,
 });
 
 module.exports = async function handler(req, res) {
@@ -71,5 +71,7 @@ module.exports = async function handler(req, res) {
     }
   }
 
+  return res.status(405).json({ error: 'Method not allowed' });
+};
   return res.status(405).json({ error: 'Method not allowed' });
 };
